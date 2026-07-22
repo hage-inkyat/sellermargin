@@ -119,6 +119,7 @@ a { color: var(--accent-ink); }
   font-size: 16px;
 }
 .btn:hover { filter: brightness(1.08); }
+.btn.is-disabled { background: var(--muted); cursor: default; pointer-events: none; }
 
 details { border-bottom: 1px solid var(--line); padding: 10px 0; }
 details summary { cursor: pointer; font-weight: 600; }

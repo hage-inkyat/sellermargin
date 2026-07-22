@@ -18,29 +18,37 @@ function fmt(country, x) {
   return c.symbol + x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Clamp to a finite, non-negative, sane value; anything else becomes 0.
+function readNum(id, max = 1e9) {
+  const v = parseFloat($(id).value);
+  if (!Number.isFinite(v) || v < 0) return 0;
+  return Math.min(v, max);
+}
+
 function readInputs() {
   const country = $("country").value;
+  const fx = readNum("fxRate");
   return {
     input: {
       country,
-      itemPrice: parseFloat($("itemPrice").value) || 0,
-      shipping: parseFloat($("shipping").value) || 0,
+      itemPrice: readNum("itemPrice"),
+      shipping: readNum("shipping"),
       giftWrap: 0,
-      salesTax: parseFloat($("salesTax").value) || 0,
+      salesTax: readNum("salesTax"),
       listingsUsed: 1,
       offsiteAds: $("offsiteAds").value,
       sellerVatRegistered: $("vatRegistered").checked,
       currencyConversion: $("ccyConv").checked,
       internationalOrder: $("intlOrder").checked,
-      fxUsdToLocal: parseFloat($("fxRate").value) || FEES.countries[country].fxUsdToLocal,
+      fxUsdToLocal: fx > 0 ? fx : FEES.countries[country].fxUsdToLocal,
     },
     costs: {
-      cogs: parseFloat($("cogs").value) || 0,
-      shippingCost: parseFloat($("shipCost").value) || 0,
-      labor: parseFloat($("labor").value) || 0,
-      other: parseFloat($("otherCost").value) || 0,
+      cogs: readNum("cogs"),
+      shippingCost: readNum("shipCost"),
+      labor: readNum("labor"),
+      other: readNum("otherCost"),
     },
-    targetMargin: parseFloat($("targetMargin").value) || 0,
+    targetMargin: readNum("targetMargin", 99),
   };
 }
 
@@ -51,6 +59,12 @@ function recalc() {
   try {
     feeResult = computeFees(FEES, input);
   } catch {
+    // Never leave stale numbers on screen if the engine rejects the input.
+    for (const id of ["outRevenue", "outFees", "outNet", "outProfit", "outMargin", "outBreakeven", "outTargetPrice"]) {
+      $(id).textContent = "—";
+    }
+    $("feeRows").innerHTML = "";
+    $("outFeeRate").textContent = "";
     return;
   }
   const p = computeProfit(feeResult, costs);

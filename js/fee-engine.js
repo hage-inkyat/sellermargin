@@ -109,7 +109,9 @@ export function computeFees(cfg, input) {
  * @param {object} costs  {cogs, shippingCost, labor, other} in local currency
  */
 export function computeProfit(feeResult, costs) {
-  const totalCosts = num(costs.cogs) + num(costs.shippingCost) + num(costs.labor) + num(costs.other);
+  // Negative costs would silently inflate profit — clamp to zero.
+  const cost = (x) => Math.max(0, num(x));
+  const totalCosts = cost(costs.cogs) + cost(costs.shippingCost) + cost(costs.labor) + cost(costs.other);
   const profit = round2(feeResult.netRevenue - totalCosts);
   const margin = feeResult.orderRevenue > 0 ? round2((profit / feeResult.orderRevenue) * 100) : 0;
   return { totalCosts: round2(totalCosts), profit, margin };

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Etsy Fee Calculator 2026 — Updated for the June 22 Fee Changes | SellerMargin</title>
-<meta name="description" content="Free Etsy fee & profit calculator updated for the June 22, 2026 regulatory fee changes. Accurate for US, UK, EU, Canada & Australia sellers — including VAT on fees and Offsite Ads on shipping.">
+<title>SellerMargin — Free Etsy Fee Calculator 2026 (Updated for the June 22 Fee Changes)</title>
+<meta name="description" content="Free fee & profit calculator for Etsy sellers, updated for the June 22, 2026 fee changes — country regulatory fees, VAT on seller fees, and Offsite Ads on shipping. Covers US, UK, CA, AU, DE, FR, IT, ES, NL.">
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
 {
@@ -37,12 +37,13 @@
 <section class="hero">
   <h1>Etsy fee &amp; profit calculator<br><span class="accent">updated for the June&nbsp;22,&nbsp;2026 fee changes</span></h1>
   <p class="sub">
-    Most free calculators still use pre-June-2026 rates and quietly skip three fees:
-    country-specific <strong>regulatory operating fees</strong>, <strong>VAT charged on your seller fees</strong>,
-    and <strong>Offsite Ads taken from your shipping revenue too</strong>.
-    This one doesn't. Runs entirely in your browser — nothing is uploaded.
+    We checked six popular free calculators on July 23, 2026: none applied the
+    <strong>June 22 regulatory-fee changes</strong>, and none modeled
+    <strong>VAT charged on your seller fees</strong>. This one does both — and counts
+    <strong>Offsite Ads on your shipping revenue too</strong>.
+    Runs entirely in your browser — nothing is uploaded.
   </p>
-  <p class="meta">Fee data last verified: <span class="verified-date"></span> · <a href="#sources">sources</a></p>
+  <p class="meta">Fee data last verified: <span class="verified-date">2026-07-23</span> · <a href="#sources">sources</a></p>
 </section>
 
 <section id="calculator" class="calc card">
@@ -62,9 +63,10 @@
         <label>Shipping charged <span class="ccy">$</span>
           <input type="number" id="shipping" value="5" min="0" step="0.01">
         </label>
-        <label>Sales tax / VAT collected by Etsy <span class="ccy">$</span>
+        <label>Sales tax Etsy adds at checkout <span class="ccy">$</span>
           <input type="number" id="salesTax" value="0" min="0" step="0.01">
-          <small>Payment processing is charged on the tax-inclusive total — that's why it matters.</small>
+          <small>US/CA/AU-style checkout tax only — payment processing is charged on it.
+          If your prices are VAT-inclusive (UK/EU), leave this at 0.</small>
         </label>
       </fieldset>
 
@@ -98,7 +100,7 @@
         <label class="check"><input type="checkbox" id="ccyConv">
           My listings are in a different currency than my payout (2.5% conversion)</label>
         <label id="intlRow" class="check"><input type="checkbox" id="intlOrder">
-          This order ships internationally (higher processing rate in CA/AU)</label>
+          International order — 4% processing (CA: orders to the US still count as domestic)</label>
         <small id="caNote" class="muted"></small>
         <label><span id="fxLabel">USD → local rate (editable)</span>
           <input type="number" id="fxRate" step="0.0001" min="0">
@@ -107,7 +109,7 @@
       </fieldset>
     </div>
 
-    <div class="calc-results">
+    <div class="calc-results" aria-live="polite" aria-atomic="false">
       <div class="tiles">
         <div class="tile"><span class="tile-label">Order revenue</span><span class="tile-value" id="outRevenue">—</span></div>
         <div class="tile"><span class="tile-label">Total Etsy fees</span><span class="tile-value fee" id="outFees">—</span></div>
@@ -136,11 +138,12 @@
 </section>
 
 <section id="fees-2026" class="card">
-  <h2>What changed on June 22, 2026 — and why most calculators are now wrong</h2>
+  <h2>What changed on June 22, 2026 — and why the calculators we checked are now wrong</h2>
   <p>
     Etsy updated its <strong>regulatory operating fees</strong> for several countries effective June 22, 2026.
     These are percentage fees added on top of transaction fees for sellers in specific countries.
-    Most free calculators were built for US sellers and never modeled them — or still show the old rates.
+    Of six popular free calculators we tested on July 23, 2026, none applied the new rates —
+    most never modeled these fees at all (the one accurate tool we found covers the UK only).
   </p>
   <ul class="checklist">
     <li><strong>Regulatory operating fees</strong> — country-specific %, changed June 22, 2026</li>
@@ -153,23 +156,23 @@
     <thead><tr><th>Country</th><th class="num">Payment processing</th><th class="num">Regulatory fee</th><th class="num">VAT on fees*</th></tr></thead>
     <tbody id="countryFeeRows"></tbody>
   </table>
-  <p class="muted">*Applied when no VAT/GST ID is on file. Verified <span class="verified-date"></span>. See <a href="#sources">sources</a>.</p>
+  <p class="muted">*Applied when no VAT/GST ID is on file. Verified <span class="verified-date">2026-07-23</span>. See <a href="#sources">sources</a>.</p>
 </section>
 
 <section id="workbook" class="card upsell">
   <h2>Need this for your whole shop, not one order?</h2>
-  <p class="sub">The <strong>Etsy Profit Workbook 2026</strong> is the paid big sibling of this calculator — an Excel workbook that prices your entire catalog:</p>
+  <p class="sub">The <strong>SellerMargin Profit Workbook 2026</strong> (for Etsy sellers) is the paid big sibling of this calculator — an Excel workbook that prices your entire catalog:</p>
   <ul class="checklist">
     <li>Bulk profit table for up to 500 listings at once (paste from your CSV)</li>
     <li>Reverse pricing: type the margin you want, get the price to charge</li>
     <li>Print-on-demand mode: Printify/Printful cost + shipping matrices</li>
     <li>Scenario compare: with/without Offsite Ads, free-shipping thresholds</li>
-    <li>All 9 countries, June 2026 fee tables, VAT handling — same verified data as this page</li>
-    <li>Free fee-table updates for all of 2026</li>
+    <li>All 9 countries (US, UK, CA, AU, DE, FR, IT, ES, NL), June 2026 fee tables, VAT handling — same verified data as this page</li>
+    <li>Free fee-data updates through December 31, 2026 — when Etsy changes a rate we model, re-download the newest version from wherever you bought it</li>
   </ul>
   <p class="price-line"><span class="price">$12</span> one-time · instant download · no subscription</p>
-  <p><a class="btn" id="buyBtn" href="#" rel="noopener">Get the workbook</a><br>
-  <small class="muted">Checkout link goes live this week. Everything on this free page stays free.</small></p>
+  <p><span class="btn is-disabled" id="buyBtn" aria-disabled="true">Coming soon</span><br>
+  <small class="muted">Checkout isn't live yet. Everything on this free page stays free.</small></p>
 </section>
 
 <section id="faq" class="card">
@@ -188,7 +191,7 @@
 
 <section id="sources" class="card">
   <h2>Sources</h2>
-  <p>All rates verified against Etsy's official documentation on <span class="verified-date"></span>:</p>
+  <p>All rates verified against Etsy's official documentation on <span class="verified-date">2026-07-23</span>:</p>
   <ul id="sourceList" class="sources">
     <li>Etsy Fees &amp; Payments Policy — etsy.com/legal/fees</li>
     <li>Etsy Help: Fee basics, payment processing fee tables, regulatory operating fees, Offsite Ads, VAT on seller fees</li>
