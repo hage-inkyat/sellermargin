@@ -1,0 +1,159 @@
+import { FEES } from "./fees-data.js";
+import { computeFees, computeProfit, breakEvenPrice, priceForTargetMargin } from "./fee-engine.js";
+
+const $ = (id) => document.getElementById(id);
+
+const FEE_LABELS = {
+  listing: "Listing fee",
+  transaction: "Transaction fee",
+  processing: "Payment processing",
+  regulatory: "Regulatory operating fee",
+  offsiteAds: "Offsite Ads fee",
+  currencyConversion: "Currency conversion",
+  vatOnFees: "VAT/GST on fees",
+};
+
+function fmt(country, x) {
+  const c = FEES.countries[country];
+  return c.symbol + x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function readInputs() {
+  const country = $("country").value;
+  return {
+    input: {
+      country,
+      itemPrice: parseFloat($("itemPrice").value) || 0,
+      shipping: parseFloat($("shipping").value) || 0,
+      giftWrap: 0,
+      salesTax: parseFloat($("salesTax").value) || 0,
+      listingsUsed: 1,
+      offsiteAds: $("offsiteAds").value,
+      sellerVatRegistered: $("vatRegistered").checked,
+      currencyConversion: $("ccyConv").checked,
+      internationalOrder: $("intlOrder").checked,
+      fxUsdToLocal: parseFloat($("fxRate").value) || FEES.countries[country].fxUsdToLocal,
+    },
+    costs: {
+      cogs: parseFloat($("cogs").value) || 0,
+      shippingCost: parseFloat($("shipCost").value) || 0,
+      labor: parseFloat($("labor").value) || 0,
+      other: parseFloat($("otherCost").value) || 0,
+    },
+    targetMargin: parseFloat($("targetMargin").value) || 0,
+  };
+}
+
+function recalc() {
+  const { input, costs, targetMargin } = readInputs();
+  const country = input.country;
+  let feeResult;
+  try {
+    feeResult = computeFees(FEES, input);
+  } catch {
+    return;
+  }
+  const p = computeProfit(feeResult, costs);
+
+  $("outRevenue").textContent = fmt(country, feeResult.orderRevenue);
+  $("outFees").textContent = "−" + fmt(country, feeResult.totalFees);
+  $("outNet").textContent = fmt(country, feeResult.netRevenue);
+  $("outProfit").textContent = fmt(country, p.profit);
+  $("outProfit").classList.toggle("neg", p.profit < 0);
+  $("outMargin").textContent = p.margin.toFixed(1) + "%";
+  $("outMargin").classList.toggle("neg", p.profit < 0);
+  $("outFeeRate").textContent = feeResult.effectiveFeeRate.toFixed(1) + "% of revenue goes to fees";
+
+  const tbody = $("feeRows");
+  tbody.innerHTML = "";
+  for (const [key, label] of Object.entries(FEE_LABELS)) {
+    const v = feeResult.fees[key];
+    if (v === 0 && (key === "regulatory" || key === "offsiteAds" || key === "currencyConversion" || key === "vatOnFees")) continue;
+    const tr = document.createElement("tr");
+    const pct = feeResult.orderRevenue > 0 ? ((v / feeResult.orderRevenue) * 100).toFixed(2) + "%" : "—";
+    tr.innerHTML = `<td>${label}</td><td class="num">${fmt(country, v)}</td><td class="num muted">${pct}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  const be = breakEvenPrice(FEES, { ...input, itemPrice: 0 }, costs);
+  $("outBreakeven").textContent = be === null ? "—" : fmt(country, be);
+  if (targetMargin > 0 && targetMargin < 100) {
+    const tp = priceForTargetMargin(FEES, { ...input, itemPrice: 0 }, costs, targetMargin);
+    $("outTargetPrice").textContent = tp === null ? "not reachable" : fmt(country, tp);
+  } else {
+    $("outTargetPrice").textContent = "—";
+  }
+}
+
+function onCountryChange() {
+  const c = FEES.countries[$("country").value];
+  $("fxRate").value = c.fxUsdToLocal;
+  $("fxLabel").textContent = `USD → ${c.currency} rate (editable)`;
+  const vatRow = $("vatRow");
+  vatRow.style.display = c.vatOnFeesRate ? "" : "none";
+  $("intlRow").style.display = c.processing.intlRate !== undefined ? "" : "none";
+  $("caNote").style.display = c.vatNote ? "" : "none";
+  if (c.vatNote) $("caNote").textContent = "Note: " + c.vatNote + ".";
+  document.querySelectorAll(".ccy").forEach((el) => (el.textContent = c.symbol));
+  recalc();
+}
+
+function buildFeeTable() {
+  const tbody = $("countryFeeRows");
+  for (const [code, c] of Object.entries(FEES.countries)) {
+    const tr = document.createElement("tr");
+    const proc =
+      `${(c.processing.rate * 100).toFixed(0)}% + ${c.symbol}${c.processing.fixed.toFixed(2)}` +
+      (c.processing.intlRate !== undefined ? ` (intl ${(c.processing.intlRate * 100).toFixed(0)}%)` : "");
+    tr.innerHTML =
+      `<td>${c.name}</td>` +
+      `<td class="num">${proc}</td>` +
+      `<td class="num">${c.regulatoryFeeRate ? (c.regulatoryFeeRate * 100).toFixed(2) + "%" : "—"}</td>` +
+      `<td class="num">${c.vatOnFeesRate ? (c.vatOnFeesRate * 100).toFixed(0) + "%" : c.vatNote ? "varies*" : "—"}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function buildSources() {
+  const ul = $("sourceList");
+  ul.innerHTML = "";
+  for (const s of FEES.meta.sources) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = s;
+    a.textContent = s;
+    a.rel = "nofollow noopener";
+    li.appendChild(a);
+    ul.appendChild(li);
+  }
+}
+
+function init() {
+  const sel = $("country");
+  for (const [code, c] of Object.entries(FEES.countries)) {
+    const opt = document.createElement("option");
+    opt.value = code;
+    opt.textContent = c.name + " (" + c.currency + ")";
+    sel.appendChild(opt);
+  }
+  sel.value = "US";
+
+  if (FEES.meta.draft) {
+    const banner = document.createElement("div");
+    banner.className = "draft-banner";
+    banner.textContent = "DRAFT fee data — verification in progress. Do not rely on these numbers yet.";
+    document.body.prepend(banner);
+  }
+  document.querySelectorAll(".verified-date").forEach((el) => (el.textContent = FEES.meta.verifiedDate));
+
+  buildFeeTable();
+  buildSources();
+  document.querySelectorAll("input, select").forEach((el) => {
+    el.addEventListener("input", recalc);
+    el.addEventListener("change", recalc);
+  });
+  sel.addEventListener("change", onCountryChange);
+  onCountryChange();
+}
+
+init();
