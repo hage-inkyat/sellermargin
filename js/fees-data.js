@@ -1,7 +1,7 @@
 // GENERATED from product/data/fees.json — do not edit by hand. Run: npm run build:data
 export const FEES = {
   "meta": {
-    "productVersion": "1.1.0",
+    "productVersion": "1.1.1",
     "verifiedDate": "2026-07-23",
     "draft": false,
     "note": "All rates verified against official Etsy pages on verifiedDate. VAT-on-fees percentages are each country's standard VAT/GST rate (Etsy publishes no numeric table; it charges the seller's home-country rate). FX rates are approximate mid-market values used only for USD-fixed fees (listing fee, Offsite Ads cap) and are user-editable.",
