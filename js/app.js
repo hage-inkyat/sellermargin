@@ -11,6 +11,7 @@ const FEE_LABELS = {
   offsiteAds: "Offsite Ads fee",
   currencyConversion: "Currency conversion",
   vatOnFees: "VAT/GST on fees",
+  caFeeTax: "Canadian tax on fees (est.)",
 };
 
 function fmt(country, x) {
@@ -41,6 +42,11 @@ function readInputs() {
       currencyConversion: $("ccyConv").checked,
       internationalOrder: $("intlOrder").checked,
       fxUsdToLocal: fx > 0 ? fx : FEES.countries[country].fxUsdToLocal,
+      caProvince: $("caProvince").value || undefined,
+      caGstRegistered: $("caGstReg").checked,
+      caQstRegistered: $("caQstReg").checked,
+      caBuyerTaxCollected: $("caBuyerTax").checked,
+      caManualFeeTax: $("caManualTax").value.trim() === "" ? undefined : readNum("caManualTax"),
     },
     costs: {
       cogs: readNum("cogs"),
@@ -82,7 +88,7 @@ function recalc() {
   tbody.innerHTML = "";
   for (const [key, label] of Object.entries(FEE_LABELS)) {
     const v = feeResult.fees[key];
-    if (v === 0 && (key === "regulatory" || key === "offsiteAds" || key === "currencyConversion" || key === "vatOnFees")) continue;
+    if (v === 0 && (key === "regulatory" || key === "offsiteAds" || key === "currencyConversion" || key === "vatOnFees" || key === "caFeeTax")) continue;
     const tr = document.createElement("tr");
     const pct = feeResult.orderRevenue > 0 ? ((v / feeResult.orderRevenue) * 100).toFixed(2) + "%" : "—";
     tr.innerHTML = `<td>${label}</td><td class="num">${fmt(country, v)}</td><td class="num muted">${pct}</td>`;
@@ -100,16 +106,22 @@ function recalc() {
 }
 
 function onCountryChange() {
-  const c = FEES.countries[$("country").value];
+  const code = $("country").value;
+  const c = FEES.countries[code];
   $("fxRate").value = c.fxUsdToLocal;
   $("fxLabel").textContent = `USD → ${c.currency} rate (editable)`;
   const vatRow = $("vatRow");
   vatRow.style.display = c.vatOnFeesRate ? "" : "none";
   $("intlRow").style.display = c.processing.intlRate !== undefined ? "" : "none";
-  $("caNote").style.display = c.vatNote ? "" : "none";
-  if (c.vatNote) $("caNote").textContent = "Note: " + c.vatNote + ".";
+  $("usNote").style.display = code === "US" ? "" : "none";
+  $("caPanel").style.display = c.caTax ? "" : "none";
+  onProvinceChange();
   document.querySelectorAll(".ccy").forEach((el) => (el.textContent = c.symbol));
   recalc();
+}
+
+function onProvinceChange() {
+  $("caQstRow").style.display = $("caProvince").value === "QC" ? "" : "none";
 }
 
 function buildFeeTable() {
@@ -151,6 +163,17 @@ function init() {
     sel.appendChild(opt);
   }
   sel.value = "US";
+
+  const provSel = $("caProvince");
+  const provinces = FEES.countries.CA.caTax.provinces;
+  for (const [code, p] of Object.entries(provinces)) {
+    const opt = document.createElement("option");
+    opt.value = code;
+    opt.textContent = p.name;
+    provSel.appendChild(opt);
+  }
+  provSel.value = "ON";
+  provSel.addEventListener("change", onProvinceChange);
 
   if (FEES.meta.draft) {
     const banner = document.createElement("div");

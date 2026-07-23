@@ -6,6 +6,12 @@
 <title>SellerMargin — Free Etsy Fee Calculator 2026 (Updated for the June 22 Fee Changes)</title>
 <meta name="description" content="Free fee & profit calculator for Etsy sellers, updated for the June 22, 2026 fee changes — country regulatory fees, VAT on seller fees, and Offsite Ads on shipping. Covers US, UK, CA, AU, DE, FR, IT, ES, NL.">
 <link rel="stylesheet" href="css/style.css">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SellerMargin — Free Etsy Fee Calculator 2026">
+<meta property="og:description" content="Fee & profit calculator for Etsy sellers with the June 22, 2026 rates, VAT on seller fees, and Canada's fee-tax rules. US, UK, CA, AU, DE, FR, IT, ES, NL.">
+<meta property="og:url" content="https://hage-inkyat.github.io/sellermargin/">
+<meta property="og:image" content="https://hage-inkyat.github.io/sellermargin/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,10 +43,11 @@
 <section class="hero">
   <h1>Etsy fee &amp; profit calculator<br><span class="accent">updated for the June&nbsp;22,&nbsp;2026 fee changes</span></h1>
   <p class="sub">
-    We checked six popular free calculators on July 23, 2026: none applied the
-    <strong>June 22 regulatory-fee changes</strong>, and none modeled
-    <strong>VAT charged on your seller fees</strong>. This one does both — and counts
-    <strong>Offsite Ads on your shipping revenue too</strong>.
+    We hand-tested 9 popular free calculators on July 23, 2026. All 7 we could operate
+    matched a <em>US</em> order to the cent — and <strong>none produced a correct UK, French, or
+    Canadian total</strong>: stale <strong>June 22 regulatory rates</strong>, no
+    <strong>VAT on seller fees</strong>, US processing rates applied worldwide.
+    This one models all of it, including <strong>Canada's fee-tax rules</strong>.
     Runs entirely in your browser — nothing is uploaded.
   </p>
   <p class="meta">Fee data last verified: <span class="verified-date">2026-07-23</span> · <a href="#sources">sources</a></p>
@@ -101,7 +108,24 @@
           My listings are in a different currency than my payout (2.5% conversion)</label>
         <label id="intlRow" class="check"><input type="checkbox" id="intlOrder">
           International order — 4% processing (CA: orders to the US still count as domestic)</label>
-        <small id="caNote" class="muted"></small>
+        <small id="usNote" class="muted" style="display:none">Note: some US states add sales tax on Etsy seller fees
+          (e.g. Texas, since Oct 2025) — not modeled here.</small>
+        <div id="caPanel" style="display:none">
+          <label>Your province
+            <select id="caProvince"></select>
+          </label>
+          <label class="check"><input type="checkbox" id="caGstReg">
+            I'm GST/HST registered (tax applies to all fees — usually recoverable as input tax credits)</label>
+          <label class="check" id="caQstRow" style="display:none"><input type="checkbox" id="caQstReg">
+            I'm QST registered (Quebec)</label>
+          <label class="check"><input type="checkbox" id="caBuyerTax" checked>
+            Etsy collected Canadian tax from the buyer on this order (most domestic orders)</label>
+          <label>Manual override: tax on fees from your Etsy invoice <span class="ccy">$</span>
+            <input type="number" id="caManualTax" min="0" step="0.01" placeholder="blank = auto-estimate">
+          </label>
+          <small class="muted">Estimated from Etsy's published rules (which fees are taxed) plus CRA provincial rates —
+            Etsy publishes no numeric rate table. Your monthly Etsy invoice is authoritative.</small>
+        </div>
         <label><span id="fxLabel">USD → local rate (editable)</span>
           <input type="number" id="fxRate" step="0.0001" min="0">
           <small>Used only for USD-fixed fees (listing fee, Offsite Ads cap).</small>
@@ -138,12 +162,14 @@
 </section>
 
 <section id="fees-2026" class="card">
-  <h2>What changed on June 22, 2026 — and why the calculators we checked are now wrong</h2>
+  <h2>What changed on June 22, 2026 — and why the calculators we tested get non-US orders wrong</h2>
   <p>
     Etsy updated its <strong>regulatory operating fees</strong> for several countries effective June 22, 2026.
-    These are percentage fees added on top of transaction fees for sellers in specific countries.
-    Of six popular free calculators we tested on July 23, 2026, none applied the new rates —
-    most never modeled these fees at all (the one accurate tool we found covers the UK only).
+    We hand-tested 9 popular free calculators on July 23, 2026 with identical orders:
+    none applied the new rates to a UK, French, or Canadian order. The two tools that advertise
+    multi-country support understated a UK seller's fees by roughly 20–25% (one applies US processing
+    rates worldwide; the other has a bug that effectively never charges the regulatory fee).
+    None modeled VAT charged on seller fees. US-only tools were accurate — for US sellers.
   </p>
   <ul class="checklist">
     <li><strong>Regulatory operating fees</strong> — country-specific %, changed June 22, 2026</li>
@@ -156,21 +182,62 @@
     <thead><tr><th>Country</th><th class="num">Payment processing</th><th class="num">Regulatory fee</th><th class="num">VAT on fees*</th></tr></thead>
     <tbody id="countryFeeRows"></tbody>
   </table>
-  <p class="muted">*Applied when no VAT/GST ID is on file. Verified <span class="verified-date">2026-07-23</span>. See <a href="#sources">sources</a>.</p>
+  <p class="muted">*Applied when no VAT/GST ID is on file. Canada: estimated by province, registration and buyer-tax status
+  (Etsy publishes the rules, not the rates — the calculator's Canada panel explains). Verified <span class="verified-date">2026-07-23</span>. See <a href="#sources">sources</a>.</p>
 </section>
 
 <section id="workbook" class="card upsell">
-  <h2>Need this for your whole shop, not one order?</h2>
-  <p class="sub">The <strong>SellerMargin Profit Workbook 2026</strong> (for Etsy sellers) is the paid big sibling of this calculator — an Excel workbook that prices your entire catalog:</p>
+  <h2>This page prices one order. The workbook prices your whole shop.</h2>
+  <p class="sub">The <strong>SellerMargin Profit Workbook 2026</strong> (for Etsy sellers) is a pricing
+  <em>workflow</em>, not a bigger calculator — one Excel file that turns an afternoon of
+  spreadsheet-building into a paste-and-read job:</p>
   <ul class="checklist">
-    <li>Bulk profit table for up to 500 listings at once (paste from your CSV)</li>
-    <li>Reverse pricing: type the margin you want, get the price to charge</li>
-    <li>Print-on-demand mode: Printify/Printful cost + shipping matrices</li>
-    <li>Scenario compare: with/without Offsite Ads, free-shipping thresholds</li>
-    <li>All 9 countries (US, UK, CA, AU, DE, FR, IT, ES, NL), June 2026 fee tables, VAT handling — same verified data as this page</li>
-    <li>Free fee-data updates through December 31, 2026 — when Etsy changes a rate we model, re-download the newest version from wherever you bought it</li>
+    <li><strong>Bulk Pricing</strong> — paste up to 500 listings, read profit &amp; margin per item; money-losing listings turn red</li>
+    <li><strong>Reverse Pricing</strong> — type the margin you want, read off the price to charge (incl. a free-shipping strategy compare)</li>
+    <li><strong>Scenario Compare</strong> — the same order with no ads / 15% / 12% Offsite Ads, side by side</li>
+    <li><strong>Canada fee-tax rules engine</strong> — province + registration + buyer-tax inputs, with a manual override from your Etsy invoice</li>
+    <li><strong>Fee Tables with sources</strong> — every rate cited to Etsy's official pages, verified <span class="verified-date">2026-07-23</span>; update the data sheet and every formula recalculates</li>
+    <li>Works offline in Excel 2016+, Google Sheets, LibreOffice 7+ — no macros, nothing uploaded</li>
   </ul>
-  <p class="price-line"><span class="price">$12</span> one-time · instant download · no subscription</p>
+
+  <div class="previews">
+    <figure>
+      <img src="img/1-single-order.png" alt="Single Order sheet preview — full fee breakdown with sample values" loading="lazy">
+      <figcaption>Single Order sheet (sample values)</figcaption>
+    </figure>
+    <figure>
+      <img src="img/2-bulk-pricing.png" alt="Bulk Pricing sheet preview — profit per listing across a catalog, sample values" loading="lazy">
+      <figcaption>Bulk Pricing — 500 rows ready (sample values)</figcaption>
+    </figure>
+  </div>
+
+  <h3>Free page vs. workbook</h3>
+  <table class="fee-table wide">
+    <thead><tr><th></th><th>This free page</th><th>Workbook ($15)</th></tr></thead>
+    <tbody>
+      <tr><td>Single-order fee breakdown</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Whole-catalog profit (500 listings)</td><td>—</td><td>✓</td></tr>
+      <tr><td>Reverse pricing to a target margin</td><td>1 price at a time</td><td>margin ladder + custom</td></tr>
+      <tr><td>Offsite Ads scenario compare</td><td>—</td><td>✓</td></tr>
+      <tr><td>Canada province/registration tax engine</td><td>✓</td><td>✓ + bulk assumptions</td></tr>
+      <tr><td>Works offline / your own file</td><td>browser only</td><td>✓</td></tr>
+      <tr><td>Fee-data updates through Dec 31, 2026</td><td>✓ (this page)</td><td>✓ (re-download)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Who it's for — and not for</h3>
+  <p><strong>For:</strong> Etsy sellers in the US, UK, Canada, Australia, Germany, France, Italy, Spain or the
+  Netherlands with more than a handful of listings, POD sellers pricing catalogs, and bookkeepers/VAs
+  who price client shops.<br>
+  <strong>Not for:</strong> sellers outside those 9 countries (fee tables won't match), anyone who only ever
+  needs one order at a time (this free page already does that), or anyone wanting live shop sync —
+  this is a spreadsheet by design, nothing connects to your account.</p>
+
+  <p class="muted">v1.1.0 · fee data verified <span class="verified-date">2026-07-23</span> · free fee-data updates
+  through Dec 31, 2026 · 7-day fix-or-refund policy (details in the download) · built with AI assistance,
+  every rate human-auditable via the sources below · not affiliated with Etsy, Inc.</p>
+
+  <p class="price-line"><span class="price">$15</span> one-time · instant download · no subscription</p>
   <p><span class="btn is-disabled" id="buyBtn" aria-disabled="true">Coming soon</span><br>
   <small class="muted">Checkout isn't live yet. Everything on this free page stays free.</small></p>
 </section>
@@ -179,6 +246,16 @@
   <h2>FAQ</h2>
   <details><summary>Is this calculator accurate?</summary>
     <p>Every rate is taken from Etsy's official fee documentation and re-verified on the date shown above, with sources linked below. If Etsy changes fees, we update the data file — the logic itself is open in the page source. It's still an estimate: your exact bill can differ with promotions, refunds, or country tax specifics.</p></details>
+  <details><summary>Aren't there other free calculators?</summary>
+    <p>Yes — and for US sellers several are accurate; we verified that ourselves. The gap is outside the US:
+    of the 9 popular tools we hand-tested on July 23, 2026, none computed a correct UK, French, or Canadian
+    order (stale regulatory rates, missing VAT on fees, US processing rates applied worldwide). If you're a
+    US seller who only needs one order at a time, any accurate tool is fine — including this one.</p></details>
+  <details><summary>How does the Canada estimate work?</summary>
+    <p>Etsy publishes <em>which</em> fees are taxed for Canadian sellers (by registration status and whether Etsy
+    collected buyer tax on the order) but not the numeric rates. We apply your province's GST/HST rate (plus BC PST
+    or Quebec QST) to the fees Etsy says are taxable. It's clearly labeled an estimate; your monthly Etsy invoice
+    is authoritative, and you can type its amount into the manual-override field instead.</p></details>
   <details><summary>Do you see my numbers?</summary>
     <p>No. The calculator runs entirely in your browser. Nothing you type is sent anywhere — you can open this page, disconnect from the internet, and it keeps working.</p></details>
   <details><summary>Why does my margin drop so much with Offsite Ads?</summary>

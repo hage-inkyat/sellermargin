@@ -1,7 +1,7 @@
 // GENERATED from product/data/fees.json — do not edit by hand. Run: npm run build:data
 export const FEES = {
   "meta": {
-    "productVersion": "1.0.0",
+    "productVersion": "1.1.0",
     "verifiedDate": "2026-07-23",
     "draft": false,
     "note": "All rates verified against official Etsy pages on verifiedDate. VAT-on-fees percentages are each country's standard VAT/GST rate (Etsy publishes no numeric table; it charges the seller's home-country rate). FX rates are approximate mid-market values used only for USD-fixed fees (listing fee, Offsite Ads cap) and are user-editable.",
@@ -20,7 +20,7 @@ export const FEES = {
       "regulatoryBase": "Regulatory operating fee applies to item price + shipping + gift wrap; excludes tax collected by Etsy.",
       "offsiteAdsBase": "Offsite Ads % applies to the order amount including shipping and gift wrap; capped at 100 USD per attributed order. US checkout sales tax is NOT included; for non-US sellers, tax inside a VAT-inclusive item price is inherently included.",
       "canadaTaxes": "Canadian GST/HST/PST/QST on seller fees depends on province and registration status and is NOT modeled — see Etsy's Canadian tax help article.",
-      "usTaxOnFees": "Some US states charge sales tax on Etsy seller fees; not modeled.",
+      "usTaxOnFees": "Some US states charge sales tax on Etsy seller fees — e.g. Texas: 6.25% on transaction fees (applied to 80% of the fee) since 2025-10-01, no exemption mechanism. Not modeled; disclosed in UI.",
       "multiQuantity": "Each additional quantity sold in one order renews the 0.20 USD listing fee; the calculators count one listing fee per order."
     },
     "june2026RegulatoryChanges": {
@@ -107,8 +107,92 @@ export const FEES = {
       },
       "regulatoryFeeRate": 0.005,
       "vatOnFeesRate": null,
-      "vatNote": "GST/HST/PST/QST on fees varies by province & registration — not modeled",
-      "intlNote": "Orders from US buyers are charged the domestic 3% rate; the 4% intlRate applies only to non-US international orders"
+      "vatNote": "Canadian tax on fees is ESTIMATED from Etsy's published decision table (province, registration, buyer-tax status); your monthly Etsy invoice is authoritative",
+      "intlNote": "Orders from US buyers are charged the domestic 3% rate; the 4% intlRate applies only to non-US international orders",
+      "caTax": {
+        "note": "Etsy publishes WHICH fees are taxed (help article 6633345416215), not numeric rates. Rates below = seller-province GST/HST per CRA place-of-supply (derived, not Etsy-verbatim) + BC PST 7% on all fees + QC QST 9.975%. Regulatory fee treated as always-taxed (conservative; Etsy's always-taxed list is non-exhaustive). Verified 2026-07-23; NS dropped to 14% on 2025-04-01.",
+        "rules": "Registered (GST/HST): ALL fees taxed. Unregistered: transaction+processing exempt ONLY on orders where Etsy collected buyer GST/HST (most domestic orders); other fees always taxed. BC: +7% PST on all fees unconditionally. MB/SK: no provincial tax on fees. QC: QST mirrors the GST rule.",
+        "provinces": {
+          "AB": {
+            "name": "Alberta",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          },
+          "BC": {
+            "name": "British Columbia",
+            "gsthst": 0.05,
+            "pst": 0.07,
+            "qst": 0
+          },
+          "MB": {
+            "name": "Manitoba",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          },
+          "NB": {
+            "name": "New Brunswick",
+            "gsthst": 0.15,
+            "pst": 0,
+            "qst": 0
+          },
+          "NL": {
+            "name": "Newfoundland and Labrador",
+            "gsthst": 0.15,
+            "pst": 0,
+            "qst": 0
+          },
+          "NS": {
+            "name": "Nova Scotia",
+            "gsthst": 0.14,
+            "pst": 0,
+            "qst": 0
+          },
+          "NT": {
+            "name": "Northwest Territories",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          },
+          "NU": {
+            "name": "Nunavut",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          },
+          "ON": {
+            "name": "Ontario",
+            "gsthst": 0.13,
+            "pst": 0,
+            "qst": 0
+          },
+          "PE": {
+            "name": "Prince Edward Island",
+            "gsthst": 0.15,
+            "pst": 0,
+            "qst": 0
+          },
+          "QC": {
+            "name": "Quebec",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0.09975
+          },
+          "SK": {
+            "name": "Saskatchewan",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          },
+          "YT": {
+            "name": "Yukon",
+            "gsthst": 0.05,
+            "pst": 0,
+            "qst": 0
+          }
+        }
+      }
     },
     "AU": {
       "name": "Australia",

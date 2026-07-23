@@ -81,6 +81,32 @@ export function computeFees(cfg, input) {
     vatOnFees = c.vatOnFeesRate * vatBase;
   }
 
+  // 8) Canadian tax on fees — rules engine per Etsy's published decision table.
+  //    Order fees (transaction+processing) are exempt only for UNregistered
+  //    sellers on orders where Etsy collected buyer GST/HST; all other fees are
+  //    always taxed. BC adds 7% PST on all fees; QC QST mirrors the GST rule.
+  //    A manual amount (from the seller's Etsy invoice) overrides the estimate.
+  let caFeeTax = 0;
+  if (c.caTax && input.caProvince) {
+    const manual = input.caManualFeeTax;
+    if (manual !== undefined && manual !== null && manual !== "") {
+      caFeeTax = Math.max(0, num(manual));
+    } else {
+      const p = c.caTax.provinces[input.caProvince];
+      if (p) {
+        const orderFees = transaction + processing;
+        const alwaysFees = listing + regulatory + offsiteAds + currencyConversion;
+        const allFees = orderFees + alwaysFees;
+        const orderTaxed = input.caGstRegistered || !input.caBuyerTaxCollected;
+        const gst = p.gsthst * alwaysFees + (orderTaxed ? p.gsthst * orderFees : 0);
+        const pst = (p.pst || 0) * allFees;
+        const qstTaxed = input.caQstRegistered || !input.caBuyerTaxCollected;
+        const qst = p.qst ? (qstTaxed ? p.qst * allFees : p.qst * alwaysFees) : 0;
+        caFeeTax = gst + pst + qst;
+      }
+    }
+  }
+
   const fees = {
     listing: round2(listing),
     transaction: round2(transaction),
@@ -89,6 +115,7 @@ export function computeFees(cfg, input) {
     offsiteAds: round2(offsiteAds),
     currencyConversion: round2(currencyConversion),
     vatOnFees: round2(vatOnFees),
+    caFeeTax: round2(caFeeTax),
   };
   const totalFees = round2(Object.values(fees).reduce((a, b) => a + b, 0));
   const orderRevenue = round2(itemShipWrap);
